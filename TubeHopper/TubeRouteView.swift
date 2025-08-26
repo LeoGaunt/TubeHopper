@@ -10,10 +10,17 @@ import SwiftUI
 
 struct TubeRouteView: View {
     private let stations = StationData.shared
-
-    @State private var startStation: String = ""
-    @State private var endStation: String = ""
+    
+    @State private var startStation: String
+    @State private var endStation: String
     @State private var path: [PathStep] = []
+
+    init() {
+        let first = stations.first?.name ?? ""
+        let last = stations.last?.name ?? first
+        _startStation = State(initialValue: first)
+        _endStation = State(initialValue: last)
+    }
 
     var body: some View {
         NavigationView {

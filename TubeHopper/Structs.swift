@@ -9,7 +9,7 @@ import Foundation
 
 class StationData {
     static let shared: [Station] = {
-        return loadStations()
+        return loadStations().sorted(by: { $0.name < $1.name })
     }()
 }
 
