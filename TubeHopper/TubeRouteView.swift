@@ -40,7 +40,7 @@ struct TubeRouteView: View {
                 .pickerStyle(MenuPickerStyle())
 
                 Button("Find Shortest Path") {
-                    path = shortestPathWithLines(
+                    path = shortestPathFewestChanges(
                         from: startStation,
                         to: endStation,
                         stations: stations

@@ -43,4 +43,5 @@ struct PathStep: Identifiable {
     let id = UUID()
     let station: Station
     let line: String
+    let changeCount: Int // total number of line changes so far - so can be used as a penalty
 }

@@ -7,17 +7,16 @@
 
 import Foundation
 
-func shortestPathWithLines(from startName: String, to endName: String, stations: [Station]) -> [PathStep]? {
+func shortestPathFewestChanges(from startName: String, to endName: String, stations: [Station]) -> [PathStep]? {
     var queue: [[PathStep]] = []
-    var visited: Set<String> = [] // format: "StationName|Line"
+    var visited: [String: Int] = [:] // "StationName|Line" : min changeCount
 
     guard let startStation = stations.first(where: { $0.name == startName }) else { return nil }
 
-    // Initialize queue with all lines from start station
     for line in startStation.lines {
-        let step = PathStep(station: startStation, line: line)
+        let step = PathStep(station: startStation, line: line, changeCount: 0)
         queue.append([step])
-        visited.insert("\(startStation.name)|\(line)")
+        visited["\(startStation.name)|\(line)"] = 0
     }
 
     while !queue.isEmpty {
@@ -30,16 +29,23 @@ func shortestPathWithLines(from startName: String, to endName: String, stations:
         }
 
         for connection in currentStation.connections {
-            let visitKey = "\(connection.station)|\(connection.line)"
-            if !visited.contains(visitKey),
-               let nextStation = stations.first(where: { $0.name == connection.station }) {
-                visited.insert(visitKey)
-                var newPath = path
-                newPath.append(PathStep(station: nextStation, line: connection.line))
-                queue.append(newPath)
+            guard let nextStation = stations.first(where: { $0.name == connection.station }) else { continue }
+
+            let nextLine = connection.line
+            let changeCount = currentStep.line == nextLine ? currentStep.changeCount : currentStep.changeCount + 1
+            let key = "\(nextStation.name)|\(nextLine)"
+
+            if let visitedCount = visited[key], visitedCount <= changeCount {
+                continue // already visited with fewer changes
             }
+
+            visited[key] = changeCount
+            var newPath = path
+            newPath.append(PathStep(station: nextStation, line: nextLine, changeCount: changeCount))
+            queue.append(newPath)
         }
     }
 
     return nil
 }
+
