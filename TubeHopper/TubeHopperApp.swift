@@ -18,10 +18,11 @@ struct TubeHopperApp: App {
     }
 }
 
+// MARK: - Store
 class StationStore: ObservableObject {
     @Published var stations: [Station]
-
+    
     init() {
-        self.stations = loadStations() // only runs once at app launch
+        self.stations = loadStations().sorted { $0.name < $1.name }
     }
 }

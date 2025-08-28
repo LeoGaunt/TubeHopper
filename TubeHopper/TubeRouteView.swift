@@ -9,31 +9,24 @@
 import SwiftUI
 
 struct TubeRouteView: View {
-    private let stations = StationData.shared
+    @EnvironmentObject var stationStore: StationStore
     
-    @State private var startStation: String
-    @State private var endStation: String
+    @State private var startStation: String = ""
+    @State private var endStation: String = ""
     @State private var path: [PathStep] = []
-
-    init() {
-        let first = stations.first?.name ?? ""
-        let last = stations.last?.name ?? first
-        _startStation = State(initialValue: first)
-        _endStation = State(initialValue: last)
-    }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
                 Picker("Start Station", selection: $startStation) {
-                    ForEach(stations, id: \.name) { station in
+                    ForEach(stationStore.stations, id: \.name) { station in
                         Text(station.name).tag(station.name)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
 
                 Picker("End Station", selection: $endStation) {
-                    ForEach(stations, id: \.name) { station in
+                    ForEach(stationStore.stations, id: \.name) { station in
                         Text(station.name).tag(station.name)
                     }
                 }
@@ -43,7 +36,7 @@ struct TubeRouteView: View {
                     path = shortestPathFewestChanges(
                         from: startStation,
                         to: endStation,
-                        stations: stations
+                        stations: stationStore.stations
                     ) ?? []
                 }
                 .padding()
@@ -84,6 +77,15 @@ struct TubeRouteView: View {
             }
             .padding()
             .navigationTitle("Tube Route Finder")
+            // Initialize start/end stations when the view appears
+            .onAppear {
+                if startStation.isEmpty {
+                    startStation = stationStore.stations.first?.name ?? ""
+                }
+                if endStation.isEmpty {
+                    endStation = stationStore.stations.last?.name ?? startStation
+                }
+            }
         }
     }
 }

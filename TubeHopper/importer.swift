@@ -7,25 +7,17 @@
 
 import Foundation
 
-func loadJSONData(filename: String) -> Data? {
-    guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else { return nil }
-    return try? Data(contentsOf: url)
-}
-
 func loadStations() -> [Station] {
-    guard let url = Bundle.main.url(forResource: "tube_network_clean", withExtension: "json") else {
-        print("JSON file not found")
+    guard let url = Bundle.main.url(forResource: "tube_network_clean_new", withExtension: "json"),
+          let data = try? Data(contentsOf: url) else {
         return []
     }
     
     do {
-        let data = try Data(contentsOf: url)
         let decoder = JSONDecoder()
-        let stations = try decoder.decode([Station].self, from: data) // directly decode array
-        print("Loaded \(stations.count) stations")
-        return stations
+        return try decoder.decode([Station].self, from: data)
     } catch {
-        print("Failed to decode JSON: \(error)")
+        print("Failed to decode stations.json:", error)
         return []
     }
 }
