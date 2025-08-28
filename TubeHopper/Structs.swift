@@ -32,3 +32,9 @@ struct PathStep {
     let line: String
     let changeCount: Int
 }
+
+struct EarliestArrival {
+    var arrivalTime: Int
+    var line: String?
+    var previousStation: String?
+}
