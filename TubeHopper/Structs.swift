@@ -21,9 +21,14 @@ struct ConnectionInfo: Codable, Hashable {
 }
 
 // MARK: - For Pathfinding
-struct PathStep: Identifiable, Hashable {
+/*struct PathStep: Identifiable, Hashable {
     let id = UUID()
     let station: Station
     let line: String
     let changeCount: Int  // running total of line changes so far
+}*/
+struct PathStep {
+    let station: Station
+    let line: String
+    let changeCount: Int
 }

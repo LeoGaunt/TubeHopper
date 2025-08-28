@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TubeRouteView: View {
     @EnvironmentObject var stationStore: StationStore
-    
+
     @State private var startStation: String = ""
     @State private var endStation: String = ""
     @State private var path: [PathStep] = []
@@ -51,19 +51,9 @@ struct TubeRouteView: View {
 
                     ScrollView {
                         VStack(alignment: .leading, spacing: 5) {
-                            ForEach(Array(path.enumerated()), id: \.element.id) { index, step in
-                                HStack {
-                                    Text(step.station.name)
-                                        .bold()
-                                    if index > 0 && step.line != path[index - 1].line {
-                                        Text("(Change to \(step.line))")
-                                            .foregroundColor(.red)
-                                            .italic()
-                                    } else {
-                                        Text("via \(step.line)")
-                                            .foregroundColor(.gray)
-                                    }
-                                }
+                            ForEach(pathRowTexts, id: \.self) { text in
+                                Text(text)
+                                    .bold()
                             }
                         }
                     }
@@ -77,7 +67,6 @@ struct TubeRouteView: View {
             }
             .padding()
             .navigationTitle("Tube Route Finder")
-            // Initialize start/end stations when the view appears
             .onAppear {
                 if startStation.isEmpty {
                     startStation = stationStore.stations.first?.name ?? ""
@@ -87,5 +76,22 @@ struct TubeRouteView: View {
                 }
             }
         }
+    }
+    
+    private var pathRowTexts: [String] {
+        guard !path.isEmpty else { return [] }
+        
+        var rows: [String] = []
+        
+        for i in path.indices {
+            let step = path[i]
+            if i > 0 && step.line != path[i - 1].line {
+                rows.append("\(step.station.name) (Change to \(step.line))")
+            } else {
+                rows.append("\(step.station.name) via \(step.line)")
+            }
+        }
+        
+        return rows
     }
 }
