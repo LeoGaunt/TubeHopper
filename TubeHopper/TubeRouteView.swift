@@ -33,7 +33,7 @@ struct TubeRouteView: View {
                 .pickerStyle(MenuPickerStyle())
 
                 Button("Find Shortest Path") {
-                    path = raptorShortestPath(
+                    path = shortestPathFewestChanges(
                         from: startStation,
                         to: endStation,
                         stations: stationStore.stations

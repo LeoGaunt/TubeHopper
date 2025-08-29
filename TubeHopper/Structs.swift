@@ -30,7 +30,8 @@ struct ConnectionInfo: Codable, Hashable {
 struct PathStep {
     let station: Station
     let line: String
-    let changeCount: Int
+    let transfers: Int
+    let stops: Int
 }
 
 struct EarliestArrival {

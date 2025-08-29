@@ -7,49 +7,58 @@
 
 import Foundation
 
-func raptorShortestPath(from start: String, to end: String, stations: [Station], maxTransfers: Int = 10) -> [PathStep]? {
-    var earliest: [String: (transfers: Int, prev: (station: String, line: String)?)] = [:]
+func shortestPathFewestChanges(from start: String, to end: String, stations: [Station]) -> [PathStep]? {
+    // Basically Dijkstra's algorithm with a lexicographic weight
+    // Priority queue simulated with array (sorted by transfers, then stops)
+    var frontier: [(station: String, line: String?, transfers: Int, stops: Int, path: [PathStep])] = []
+    frontier.append((station: start, line: nil, transfers: 0, stops: 0, path: []))
     
-    // Initialize
-    for station in stations {
-        earliest[station.name] = (transfers: Int.max, prev: nil)
+    // Best known (transfers, stops) for each station
+    var best: [String: (transfers: Int, stops: Int)] = [:]
+    for s in stations {
+        best[s.name] = (Int.max, Int.max)
     }
-    earliest[start] = (transfers: 0, prev: nil)
+    best[start] = (0, 0)
     
-    var markedStations: Set<String> = [start]
-    
-    for _ in 0..<maxTransfers {
-        var nextMarked: Set<String> = []
+    while !frontier.isEmpty {
+        // Always pick state with fewest transfers (then stops)
+        frontier.sort {
+            $0.transfers == $1.transfers
+                ? $0.stops < $1.stops
+                : $0.transfers < $1.transfers
+        }
+        let current = frontier.removeFirst()
         
-        for stationName in markedStations {
-            guard let station = stations.first(where: { $0.name == stationName }) else { continue }
-            let currentTransfers = earliest[stationName]!.transfers
-            
-            for conn in station.connections {
-                let nextTransfers = (earliest[stationName]!.prev?.line == conn.line || earliest[stationName]!.prev == nil)
-                    ? currentTransfers
-                    : currentTransfers + 1
-                
-                if nextTransfers < earliest[conn.station]!.transfers {
-                    earliest[conn.station] = (transfers: nextTransfers, prev: (station: stationName, line: conn.line))
-                    nextMarked.insert(conn.station)
-                }
-            }
+        if current.station == end {
+            return current.path
         }
         
-        if nextMarked.isEmpty { break }
-        markedStations = nextMarked
+        guard let stationObj = stations.first(where: { $0.name == current.station }) else { continue }
+        
+        for conn in stationObj.connections {
+            let nextTransfers = (current.line == conn.line || current.line == nil)
+                ? current.transfers
+                : current.transfers + 1
+            let nextStops = current.stops + 1
+            
+            let nextStep = PathStep(station: stations.first(where: { $0.name == conn.station })!,
+                                    line: conn.line,
+                                    transfers: nextTransfers,
+                                    stops: nextStops)
+            
+            if (nextTransfers < best[conn.station]!.transfers) ||
+               (nextTransfers == best[conn.station]!.transfers && nextStops < best[conn.station]!.stops) {
+                best[conn.station] = (nextTransfers, nextStops)
+                var newPath = current.path
+                newPath.append(nextStep)
+                frontier.append((station: conn.station,
+                                 line: conn.line,
+                                 transfers: nextTransfers,
+                                 stops: nextStops,
+                                 path: newPath))
+            }
+        }
     }
     
-    // Reconstruct path
-    var path: [PathStep] = []
-    var currentName = end
-    while let info = earliest[currentName]?.prev {
-        guard let station = stations.first(where: { $0.name == currentName }) else { break }
-        path.insert(PathStep(station: station, line: info.line, changeCount: earliest[currentName]!.transfers), at: 0)
-        currentName = info.station
-    }
-    
-    if path.isEmpty { return nil }
-    return path
+    return nil
 }
