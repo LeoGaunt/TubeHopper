@@ -39,3 +39,8 @@ struct EarliestArrival {
     var line: String?
     var previousStation: String?
 }
+
+struct TubeData: Codable {
+    let lines: [String]
+    let stations: [String]
+}

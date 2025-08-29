@@ -22,3 +22,17 @@ func loadStations() -> [Station] {
     }
 }
 
+func loadTubeData() -> TubeData {
+    guard let url = Bundle.main.url(forResource: "tube_data_clean", withExtension: "json"),
+          let data = try? Data(contentsOf: url) else {
+        return TubeData(lines: [], stations: [])
+    }
+    
+    do {
+        return try JSONDecoder().decode(TubeData.self, from: data)
+    } catch {
+        print("Error decoding tube data: \(error)")
+        return TubeData(lines: [], stations: [])
+    }
+}
+
