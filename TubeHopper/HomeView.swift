@@ -8,48 +8,59 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var store: StationLineStore
-    
-    let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    @EnvironmentObject var store: StationStore
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Welcome!")
-                    .font(.largeTitle)
-                    .bold()
-                    .padding(.top)
-                
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(store.lines, id: \.self) { line in
-                        let visitedStations = visitedCount(for: line)
-                        let totalStations = totalCount(for: line)
-                        let isVisited = visitedStations > 0
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Welcome!")
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.top)
+                    
+                    // Two-column grid
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                        // Line cards
+                        ForEach(store.allLines(), id: \.self) { line in
+                            let visited = store.visitedStationsCount(for: line)
+                            let total = store.totalStationsCount(for: line)
+                            let isVisited = store.isLineVisited(line)
+                            
+                            NavigationLink(destination: LineDetailView(line: line)) {
+                                LineCardView(
+                                    line: line,
+                                    visitedStations: visited,
+                                    totalStations: total,
+                                    isVisited: isVisited
+                                )
+                            }
+                            .buttonStyle(PlainButtonStyle()) // removes default NavigationLink styling
+                        }
                         
-                        LineCardView(
-                            line: line,
-                            visitedStations: visitedStations,
-                            totalStations: totalStations,
-                            isVisited: isVisited
-                        )
+                        // Upload card as the last item
+                        NavigationLink(destination: UploadPageView()) {
+                            VStack(spacing: 10) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 50)
+                                    .foregroundColor(.blue)
+                                Text("Upload TfL CSV")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 100)
+                            .background(Color.white)
+                            .cornerRadius(16)
+                            .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 3)
+                            .padding(6)
+                        }
                     }
                 }
+                .padding()
             }
-            .padding()
+            .navigationBarHidden(true)
         }
-        .background(Color(UIColor.systemGroupedBackground))
-    }
-    
-    // MARK: - Helpers
-    
-    func visitedCount(for line: String) -> Int {
-        // TODO: look up how many stations visited on this line from UserDefaults
-        return 0
-    }
-    
-    func totalCount(for line: String) -> Int {
-        // TODO: count how many stations belong to this line
-        return 100 // placeholder
     }
 }
 

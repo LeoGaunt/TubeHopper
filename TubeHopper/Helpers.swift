@@ -62,3 +62,8 @@ func shortestPathFewestChanges(from start: String, to end: String, stations: [St
     
     return nil
 }
+
+func pathStepsToStationNames(_ path: [PathStep]) -> [String] {
+    return path.map { $0.station.name }
+}
+
