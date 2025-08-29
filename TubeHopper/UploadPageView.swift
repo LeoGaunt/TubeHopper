@@ -47,18 +47,36 @@ struct UploadPageView: View {
     func processCSV(url: URL) {
         do {
             let csvString = try String(contentsOf: url, encoding: .utf8)
-            let journeys = parseTfLCSV(csvString)
+            let journeys = parseTfLCSV(csvString) // Parses start/end from TFL CSV
             
             for journey in journeys {
-                if let pathSteps = shortestPathFewestChanges(from: journey.start, to: journey.end, stations: store.stations) {
-                    let routeStations = pathStepsToStationNames(pathSteps)
-                    for stationName in routeStations {
-                        store.markStationVisited(stationName)
+                guard let pathSteps = shortestPathFewestChanges(
+                    from: journey.start,
+                    to: journey.end,
+                    stations: store.stations
+                ) else { continue }
+                
+                let routeStations = pathStepsToStationNames(pathSteps)
+                
+                // Mark start and end as visited
+                if let first = routeStations.first {
+                    store.markStationVisited(first)
+                }
+                if let last = routeStations.last {
+                    store.markStationVisited(last)
+                }
+                
+                // Mark intermediate stations as passed through
+                if routeStations.count > 2 {
+                    let middleStations = routeStations[1..<(routeStations.count - 1)]
+                    for stationName in middleStations {
+                        store.markStationPassedThrough(stationName)
                     }
                 }
             }
             
             message = "CSV uploaded successfully! ✅"
+            
         } catch {
             message = "Failed to read CSV: \(error)"
         }

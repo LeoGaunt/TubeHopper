@@ -38,7 +38,7 @@ struct HomeView: View {
                             .buttonStyle(PlainButtonStyle()) // removes default NavigationLink styling
                         }
                         
-                        // Upload card as the last item
+                        // Upload card
                         NavigationLink(destination: UploadPageView()) {
                             VStack(spacing: 10) {
                                 Image(systemName: "square.and.arrow.up")
@@ -47,6 +47,24 @@ struct HomeView: View {
                                     .frame(height: 50)
                                     .foregroundColor(.blue)
                                 Text("Upload TfL CSV")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 100)
+                            .background(Color.white)
+                            .cornerRadius(16)
+                            .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 3)
+                            .padding(6)
+                        }
+                        
+                        // Settings Card
+                        NavigationLink(destination: SettingsPageView()) {
+                            VStack(spacing: 10) {
+                                Image(systemName: "gearshape.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 50)
+                                    .foregroundColor(.purple)
+                                Text("Settings")
                                     .font(.headline)
                             }
                             .frame(maxWidth: .infinity, minHeight: 100)
