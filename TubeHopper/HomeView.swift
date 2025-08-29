@@ -38,7 +38,7 @@ struct HomeView: View {
                             .buttonStyle(PlainButtonStyle()) // removes default NavigationLink styling
                         }
                         
-                        // Upload card
+                        // Upload Card
                         NavigationLink(destination: UploadPageView()) {
                             VStack(spacing: 10) {
                                 Image(systemName: "square.and.arrow.up")
@@ -55,6 +55,24 @@ struct HomeView: View {
                             .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 3)
                             .padding(6)
                         }
+                        
+                        // Route Calculator Card
+                            NavigationLink(destination: TubeRouteView()) {
+                                VStack(spacing: 10) {
+                                    Image(systemName: "map.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 50)
+                                        .foregroundColor(.blue)
+                                    Text("Route Calculator")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 100)
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 3)
+                                .padding(6)
+                            }
                         
                         // Settings Card
                         NavigationLink(destination: SettingsPageView()) {
