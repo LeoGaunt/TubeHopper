@@ -81,7 +81,7 @@ struct HomeView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(height: 50)
-                                    .foregroundColor(.purple)
+                                    .foregroundColor(.blue)
                                 Text("Settings")
                                     .font(.headline)
                             }
